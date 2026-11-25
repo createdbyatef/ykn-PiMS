@@ -50,9 +50,9 @@ class CompleteTripRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'odometer_start.required' => 'Bacaan Odometer Mula wajib diisi.',
-            'odometer_end.required' => 'Bacaan Odometer Tamat wajib diisi.',
-            'odometer_end.gt' => 'Odometer Tamat mestilah melebihi Odometer Mula.',
+            'odometer_start.required' => __('Bacaan Odometer Mula wajib diisi.'),
+            'odometer_end.required' => __('Bacaan Odometer Tamat wajib diisi.'),
+            'odometer_end.gt' => __('Odometer Tamat mestilah melebihi Odometer Mula.'),
         ];
     }
 }

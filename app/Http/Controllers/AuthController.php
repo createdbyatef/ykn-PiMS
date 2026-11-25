@@ -21,26 +21,27 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ], [
-            'email.required' => 'Sila masukkan alamat emel rasmi YKN.',
-            'password.required' => 'Sila masukkan kata laluan anda.',
+            'email.required' => __('Sila masukkan alamat emel rasmi YKN.'),
+            'password.required' => __('Sila masukkan kata laluan anda.'),
         ]);
 
         $user = User::where('email', $credentials['email'])->first();
 
         if ($user && ! $user->is_active) {
             return back()
-                ->withErrors(['email' => 'Akaun anda tidak aktif. Sila hubungi Unit Pentadbiran YKN.'])
+                ->withErrors(['email' => __('Akaun anda tidak aktif. Sila hubungi Unit Pentadbiran YKN.')])
                 ->onlyInput('email');
         }
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            $request->session()->flash('show_splash', true);
 
             return redirect()->intended(route('dashboard'));
         }
 
         return back()
-            ->withErrors(['email' => 'Emel atau kata laluan tidak tepat. Sila cuba semula.'])
+            ->withErrors(['email' => __('Emel atau kata laluan tidak tepat. Sila cuba semula.')])
             ->onlyInput('email');
     }
 
@@ -51,6 +52,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Anda telah berjaya log keluar daripada sistem e-Pilot YKN.');
+        return redirect()->route('login')->with('success', __('Anda telah berjaya log keluar daripada sistem e-Pilot YKN.'));
     }
 }

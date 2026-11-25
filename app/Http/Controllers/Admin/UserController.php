@@ -61,7 +61,7 @@ class UserController extends Controller
 
         return redirect()
             ->route('admin.users.index')
-            ->with('success', "Pengguna {$user->name} ({$user->roleLabel()}) telah berjaya didaftarkan.");
+            ->with('success', __('Pengguna :name (:role) telah berjaya didaftarkan.', ['name' => $user->name, 'role' => $user->roleLabel()]));
     }
 
     public function edit(User $user): View
@@ -88,19 +88,21 @@ class UserController extends Controller
 
         return redirect()
             ->route('admin.users.index')
-            ->with('success', "Maklumat pengguna {$user->name} telah dikemaskini.");
+            ->with('success', __('Maklumat pengguna :name telah dikemaskini.', ['name' => $user->name]));
     }
 
     public function toggleActive(Request $request, User $user): RedirectResponse
     {
         if ($user->id === $request->user()->id) {
-            return back()->with('error', 'Anda tidak boleh menyahaktifkan akaun anda sendiri.');
+            return back()->with('error', __('Anda tidak boleh menyahaktifkan akaun anda sendiri.'));
         }
 
         $user->update(['is_active' => ! $user->is_active]);
 
-        $statusText = $user->is_active ? 'diaktifkan' : 'dinyahaktifkan';
+        $message = $user->is_active
+            ? __('Akaun :name telah diaktifkan.', ['name' => $user->name])
+            : __('Akaun :name telah dinyahaktifkan.', ['name' => $user->name]);
 
-        return back()->with('success', "Akaun {$user->name} telah {$statusText}.");
+        return back()->with('success', $message);
     }
 }

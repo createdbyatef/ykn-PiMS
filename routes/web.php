@@ -16,6 +16,14 @@ Route::get('/', function () {
         : redirect()->route('login');
 });
 
+Route::get('/locale/{locale}', function (string $locale) {
+    if (in_array($locale, \App\Http\Middleware\SetLocale::SUPPORTED_LOCALES, true)) {
+        session(['locale' => $locale]);
+    }
+
+    return redirect()->back(fallback: auth()->check() ? route('dashboard') : route('login'));
+})->name('locale.switch');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');

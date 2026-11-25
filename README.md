@@ -61,12 +61,8 @@ Visit `http://127.0.0.1:8000`.
 | :--- | :--- | :--- |
 | **Admin (Unit Pentadbiran)** | Encik Azman bin Razak | `admin@ykn.gov.my` |
 | **Staff** | Puan Nurul Huda binti Ismail | `huda@ykn.gov.my` |
-| **Staff** | Encik Hafizuddin bin Salleh | `hafiz@ykn.gov.my` |
-| **Staff** | Cik Aisyah binti Kamarudin | `aisyah@ykn.gov.my` |
 | **Pilot HQ #1** | Encik Roslan bin Ahmad | `roslan.pilot@ykn.gov.my` |
 | **Pilot HQ #2** | Encik Zulkifli bin Hassan | `zulkifli.pilot@ykn.gov.my` |
-| **Pilot HQ #3** | Encik Mohd Faizal bin Othman | `faizal.pilot@ykn.gov.my` |
-| **Pilot HQ #4** | Encik Syahrul Nizam bin Yusof | `syahrul.pilot@ykn.gov.my` |
 
 ---
 

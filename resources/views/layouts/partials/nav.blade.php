@@ -19,10 +19,7 @@
     </a>
     <a href="{{ route('bookings.index') }}" class="nav-link {{ request()->routeIs('bookings.index') || request()->routeIs('bookings.show') ? 'active' : '' }}">
         <i class="bi bi-journal-text"></i>
-        <span class="flex-grow-1">{{ $currentUser->isAdmin() ? 'Semua Tempahan' : 'Tempahan Saya' }}</span>
-        @if($pendingBadgeCount > 0)
-            <span class="badge rounded-pill bg-warning text-dark">{{ $pendingBadgeCount }}</span>
-        @endif
+        <span>{{ $currentUser->isAdmin() ? __('Tempahan') : __('Rekod Saya') }}</span>
     </a>
 @endif
 

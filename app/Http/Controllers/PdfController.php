@@ -41,7 +41,7 @@ class PdfController extends Controller
         $this->authorizeBookingPdf($request->user(), $booking);
 
         if (! $booking->canDownloadMemo()) {
-            abort(403, 'Memo Kebenaran Memandu Kenderaan Pejabat hanya dijana untuk permohonan Kenderaan Sahaja (Pandu Sendiri) yang telah diluluskan.');
+            abort(403, __('Memo Kebenaran Memandu Kenderaan Pejabat hanya dijana untuk permohonan Kenderaan Sahaja (Pandu Sendiri) yang telah diluluskan.'));
         }
 
         $booking->load(['applicant', 'vehicle', 'approver']);
@@ -73,6 +73,6 @@ class PdfController extends Controller
             return;
         }
 
-        abort(403, 'Anda tidak dibenarkan memuat turun dokumen PDF bagi tempahan ini.');
+        abort(403, __('Anda tidak dibenarkan memuat turun dokumen PDF bagi tempahan ini.'));
     }
 }

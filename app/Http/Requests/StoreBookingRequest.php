@@ -39,13 +39,13 @@ class StoreBookingRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'request_type.required' => 'Sila pilih jenis permohonan.',
-            'start_datetime.required' => 'Tarikh dan masa mula perjalanan wajib diisi.',
-            'end_datetime.required' => 'Tarikh dan masa tamat perjalanan wajib diisi.',
-            'end_datetime.after' => 'Tarikh dan masa tamat mestilah selepas tarikh dan masa mula.',
-            'destination.required' => 'Destinasi perjalanan wajib diisi.',
-            'purpose.required' => 'Tujuan rasmi perjalanan wajib diisi.',
-            'driver_license_no.required' => 'Nombor lesen memandu wajib diisi bagi permohonan Kenderaan Sahaja (Pandu Sendiri).',
+            'request_type.required' => __('Sila pilih jenis permohonan.'),
+            'start_datetime.required' => __('Tarikh dan masa mula perjalanan wajib diisi.'),
+            'end_datetime.required' => __('Tarikh dan masa tamat perjalanan wajib diisi.'),
+            'end_datetime.after' => __('Tarikh dan masa tamat mestilah selepas tarikh dan masa mula.'),
+            'destination.required' => __('Destinasi perjalanan wajib diisi.'),
+            'purpose.required' => __('Tujuan rasmi perjalanan wajib diisi.'),
+            'driver_license_no.required' => __('Nombor lesen memandu wajib diisi bagi permohonan Kenderaan Sahaja (Pandu Sendiri).'),
         ];
     }
 }

@@ -35,8 +35,8 @@ class RejectBookingRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'rejection_reason.required' => 'Sila pilih sebab penolakan permohonan.',
-            'rejection_remarks.required' => 'Sila nyatakan catatan tambahan apabila memilih sebab Lain-lain.',
+            'rejection_reason.required' => __('Sila pilih sebab penolakan permohonan.'),
+            'rejection_remarks.required' => __('Sila nyatakan catatan tambahan apabila memilih sebab Lain-lain.'),
         ];
     }
 }

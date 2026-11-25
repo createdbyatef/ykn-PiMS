@@ -116,7 +116,15 @@ class User extends Authenticatable
 
     public function roleLabel(): string
     {
-        return self::ROLES[$this->role] ?? ucfirst($this->role);
+        return __(self::ROLES[$this->role] ?? ucfirst($this->role));
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function translatedRoles(): array
+    {
+        return collect(self::ROLES)->map(fn (string $label) => __($label))->all();
     }
 
     public function roleBadgeClass(): string

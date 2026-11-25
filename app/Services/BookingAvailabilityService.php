@@ -116,11 +116,15 @@ class BookingAvailabilityService
 
                 $reason = null;
                 if ($vehicle->status === Vehicle::STATUS_MAINTENANCE) {
-                    $reason = 'Sedang diselenggara (Maintenance)';
+                    $reason = __('Sedang diselenggara (Maintenance)');
                 } elseif ($vehicle->status === Vehicle::STATUS_INACTIVE) {
-                    $reason = 'Tidak aktif';
+                    $reason = __('Tidak aktif');
                 } elseif ($conflict) {
-                    $reason = "Telah ditempah ({$conflict->booking_code}: {$conflict->start_datetime->format('d/m H:i')} - {$conflict->end_datetime->format('d/m H:i')})";
+                    $reason = __('Telah ditempah (:code: :start - :end)', [
+                        'code' => $conflict->booking_code,
+                        'start' => $conflict->start_datetime->format('d/m H:i'),
+                        'end' => $conflict->end_datetime->format('d/m H:i'),
+                    ]);
                 }
 
                 return [
@@ -152,9 +156,13 @@ class BookingAvailabilityService
 
                 $reason = null;
                 if (! $pilot->is_active) {
-                    $reason = 'Pilot tidak aktif';
+                    $reason = __('Pilot tidak aktif');
                 } elseif ($conflict) {
-                    $reason = "Ditugaskan ({$conflict->booking_code}: {$conflict->start_datetime->format('d/m H:i')} - {$conflict->end_datetime->format('d/m H:i')})";
+                    $reason = __('Ditugaskan (:code: :start - :end)', [
+                        'code' => $conflict->booking_code,
+                        'start' => $conflict->start_datetime->format('d/m H:i'),
+                        'end' => $conflict->end_datetime->format('d/m H:i'),
+                    ]);
                 }
 
                 return [
@@ -224,7 +232,7 @@ class BookingAvailabilityService
 
             if (! $lockedBooking->isPending()) {
                 throw ValidationException::withMessages([
-                    'status' => 'Hanya permohonan berstatus Menunggu Kelulusan (Pending) boleh diluluskan.',
+                    'status' => __('Hanya permohonan berstatus Menunggu Kelulusan (Pending) boleh diluluskan.'),
                 ]);
             }
 
@@ -232,17 +240,23 @@ class BookingAvailabilityService
 
             if ($lockedBooking->requiresVehicle()) {
                 if (! $vehicleId) {
-                    $errors['vehicle_id'] = 'Sila pilih kenderaan untuk permohonan ini.';
+                    $errors['vehicle_id'] = __('Sila pilih kenderaan untuk permohonan ini.');
                 } else {
                     $vehicle = Vehicle::query()->lockForUpdate()->find($vehicleId);
                     if (! $vehicle) {
-                        $errors['vehicle_id'] = 'Kenderaan tidak dijumpai.';
+                        $errors['vehicle_id'] = __('Kenderaan tidak dijumpai.');
                     } elseif ($vehicle->status === Vehicle::STATUS_MAINTENANCE) {
-                        $errors['vehicle_id'] = "Kenderaan {$vehicle->plate_number} sedang diselenggara (Maintenance) dan tidak boleh ditugaskan.";
+                        $errors['vehicle_id'] = __('Kenderaan :plate sedang diselenggara (Maintenance) dan tidak boleh ditugaskan.', ['plate' => $vehicle->plate_number]);
                     } elseif ($vehicle->status !== Vehicle::STATUS_AVAILABLE) {
-                        $errors['vehicle_id'] = "Kenderaan {$vehicle->plate_number} tidak aktif dan tidak boleh ditugaskan.";
+                        $errors['vehicle_id'] = __('Kenderaan :plate tidak aktif dan tidak boleh ditugaskan.', ['plate' => $vehicle->plate_number]);
                     } elseif ($conflict = $this->findVehicleConflict($vehicle->id, $lockedBooking->start_datetime, $lockedBooking->end_datetime, $lockedBooking->id)) {
-                        $errors['vehicle_id'] = "Pertindihan tempahan! Kenderaan {$vehicle->plate_number} telah ditempah oleh {$conflict->applicant->name} ({$conflict->booking_code}) dari {$conflict->start_datetime->format('d/m/Y H:i')} hingga {$conflict->end_datetime->format('d/m/Y H:i')}.";
+                        $errors['vehicle_id'] = __('Pertindihan tempahan! Kenderaan :plate telah ditempah oleh :name (:code) dari :start hingga :end.', [
+                            'plate' => $vehicle->plate_number,
+                            'name' => $conflict->applicant->name,
+                            'code' => $conflict->booking_code,
+                            'start' => $conflict->start_datetime->format('d/m/Y H:i'),
+                            'end' => $conflict->end_datetime->format('d/m/Y H:i'),
+                        ]);
                     }
                 }
             } else {
@@ -251,15 +265,20 @@ class BookingAvailabilityService
 
             if ($lockedBooking->requiresPilot()) {
                 if (! $pilotId) {
-                    $errors['pilot_id'] = 'Sila pilih Pilot HQ untuk permohonan ini.';
+                    $errors['pilot_id'] = __('Sila pilih Pilot HQ untuk permohonan ini.');
                 } else {
                     $pilot = User::query()->lockForUpdate()->find($pilotId);
                     if (! $pilot || ! $pilot->isPilot()) {
-                        $errors['pilot_id'] = 'Pilot yang dipilih tidak sah.';
+                        $errors['pilot_id'] = __('Pilot yang dipilih tidak sah.');
                     } elseif (! $pilot->is_active) {
-                        $errors['pilot_id'] = "Pilot {$pilot->name} tidak aktif.";
+                        $errors['pilot_id'] = __('Pilot :name tidak aktif.', ['name' => $pilot->name]);
                     } elseif ($conflict = $this->findPilotConflict($pilot->id, $lockedBooking->start_datetime, $lockedBooking->end_datetime, $lockedBooking->id)) {
-                        $errors['pilot_id'] = "Pertindihan jadual! Pilot {$pilot->name} telah ditugaskan untuk tempahan {$conflict->booking_code} dari {$conflict->start_datetime->format('d/m/Y H:i')} hingga {$conflict->end_datetime->format('d/m/Y H:i')}.";
+                        $errors['pilot_id'] = __('Pertindihan jadual! Pilot :name telah ditugaskan untuk tempahan :code dari :start hingga :end.', [
+                            'name' => $pilot->name,
+                            'code' => $conflict->booking_code,
+                            'start' => $conflict->start_datetime->format('d/m/Y H:i'),
+                            'end' => $conflict->end_datetime->format('d/m/Y H:i'),
+                        ]);
                     }
                 }
             } else {
@@ -301,20 +320,20 @@ class BookingAvailabilityService
 
             if (! $lockedBooking->isApproved()) {
                 throw ValidationException::withMessages([
-                    'status' => 'Hanya tempahan yang telah diluluskan boleh ditandakan sebagai selesai.',
+                    'status' => __('Hanya tempahan yang telah diluluskan boleh ditandakan sebagai selesai.'),
                 ]);
             }
 
             if ($lockedBooking->vehicle_id !== null || ($odometerStart !== null || $odometerEnd !== null)) {
                 if ($odometerStart === null || $odometerEnd === null) {
                     throw ValidationException::withMessages([
-                        'odometer_start' => 'Odometer Mula dan Odometer Tamat wajib diisi.',
+                        'odometer_start' => __('Odometer Mula dan Odometer Tamat wajib diisi.'),
                     ]);
                 }
 
                 if ($odometerEnd <= $odometerStart) {
                     throw ValidationException::withMessages([
-                        'odometer_end' => 'Odometer Tamat mestilah lebih besar daripada Odometer Mula.',
+                        'odometer_end' => __('Odometer Tamat mestilah lebih besar daripada Odometer Mula.'),
                     ]);
                 }
             }

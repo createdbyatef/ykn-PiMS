@@ -44,7 +44,7 @@ class VehicleController extends Controller
 
         return redirect()
             ->route('admin.vehicles.index')
-            ->with('success', "Kenderaan {$vehicle->displayName()} telah berjaya didaftarkan.");
+            ->with('success', __('Kenderaan :name telah berjaya didaftarkan.', ['name' => $vehicle->displayName()]));
     }
 
     public function edit(Vehicle $vehicle): View
@@ -58,7 +58,7 @@ class VehicleController extends Controller
 
         return redirect()
             ->route('admin.vehicles.index')
-            ->with('success', "Maklumat kenderaan {$vehicle->plate_number} telah dikemaskini.");
+            ->with('success', __('Maklumat kenderaan :plate telah dikemaskini.', ['plate' => $vehicle->plate_number]));
     }
 
     public function destroy(Vehicle $vehicle): RedirectResponse
@@ -69,7 +69,7 @@ class VehicleController extends Controller
             ->exists();
 
         if ($hasUpcomingApproved) {
-            return back()->with('error', "Kenderaan {$vehicle->plate_number} masih mempunyai tempahan aktif yang diluluskan dan tidak boleh dipadam.");
+            return back()->with('error', __('Kenderaan :plate masih mempunyai tempahan aktif yang diluluskan dan tidak boleh dipadam.', ['plate' => $vehicle->plate_number]));
         }
 
         $label = $vehicle->displayName();
@@ -77,6 +77,6 @@ class VehicleController extends Controller
 
         return redirect()
             ->route('admin.vehicles.index')
-            ->with('success', "Kenderaan {$label} telah dipadam daripada sistem.");
+            ->with('success', __('Kenderaan :name telah dipadam daripada sistem.', ['name' => $label]));
     }
 }

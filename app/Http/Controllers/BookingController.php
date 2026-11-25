@@ -94,9 +94,9 @@ class BookingController extends Controller
             'status' => Booking::STATUS_PENDING,
         ]);
 
-        $message = "Permohonan {$booking->booking_code} telah berjaya dihantar ke Unit Pentadbiran.";
+        $message = __('Permohonan :code telah berjaya dihantar ke Unit Pentadbiran.', ['code' => $booking->booking_code]);
         if ($isUrgent) {
-            $message .= ' (Ditandakan sebagai SEGERA kerana notis kurang daripada 3 hari).';
+            $message .= __(' (Ditandakan sebagai SEGERA kerana notis kurang daripada 3 hari).');
         }
 
         return redirect()->route('bookings.show', $booking)->with('success', $message);
@@ -143,9 +143,9 @@ class BookingController extends Controller
             isset($validated['pilot_id']) ? (int) $validated['pilot_id'] : null
         );
 
-        $message = "Permohonan {$updated->booking_code} telah DILULUSKAN.";
+        $message = __('Permohonan :code telah DILULUSKAN.', ['code' => $updated->booking_code]);
         if ($updated->canDownloadMemo()) {
-            $message .= ' Memo Kebenaran Memandu Kenderaan Pejabat kini sedia untuk dimuat turun.';
+            $message .= __(' Memo Kebenaran Memandu Kenderaan Pejabat kini sedia untuk dimuat turun.');
         }
 
         return redirect()->route('bookings.show', $updated)->with('success', $message);
@@ -154,7 +154,7 @@ class BookingController extends Controller
     public function reject(RejectBookingRequest $request, Booking $booking): RedirectResponse
     {
         if (! $booking->isPending()) {
-            return back()->with('error', 'Hanya permohonan berstatus Menunggu Kelulusan (Pending) boleh ditolak.');
+            return back()->with('error', __('Hanya permohonan berstatus Menunggu Kelulusan (Pending) boleh ditolak.'));
         }
 
         $validated = $request->validated();
@@ -171,7 +171,7 @@ class BookingController extends Controller
 
         return redirect()
             ->route('bookings.show', $booking)
-            ->with('success', "Permohonan {$booking->booking_code} telah direkodkan sebagai TIDAK DILULUSKAN.");
+            ->with('success', __('Permohonan :code telah direkodkan sebagai TIDAK DILULUSKAN.', ['code' => $booking->booking_code]));
     }
 
     public function complete(CompleteTripRequest $request, Booking $booking): RedirectResponse
@@ -186,9 +186,9 @@ class BookingController extends Controller
         );
 
         $distance = $completed->totalDistance();
-        $message = "Perjalanan {$completed->booking_code} telah direkodkan SELESAI.";
+        $message = __('Perjalanan :code telah direkodkan SELESAI.', ['code' => $completed->booking_code]);
         if ($distance !== null) {
-            $message .= " Jarak perjalanan: {$distance} km dan odometer kenderaan telah dikemaskini.";
+            $message .= __(' Jarak perjalanan: :distance km dan odometer kenderaan telah dikemaskini.', ['distance' => $distance]);
         }
 
         if ($request->user()->isPilot()) {
@@ -203,17 +203,17 @@ class BookingController extends Controller
         $user = $request->user();
 
         if (! $user->isAdmin() && $booking->user_id !== $user->id) {
-            abort(403, 'Anda tidak dibenarkan membatalkan permohonan ini.');
+            abort(403, __('Anda tidak dibenarkan membatalkan permohonan ini.'));
         }
 
         if (! $booking->isPending() && ! ($user->isAdmin() && $booking->isRejected())) {
-            return back()->with('error', 'Hanya permohonan berstatus Menunggu Kelulusan (Pending) boleh dibatalkan.');
+            return back()->with('error', __('Hanya permohonan berstatus Menunggu Kelulusan (Pending) boleh dibatalkan.'));
         }
 
         $code = $booking->booking_code;
         $booking->delete();
 
-        return redirect()->route('bookings.index')->with('success', "Permohonan {$code} telah dibatalkan dan dipadam.");
+        return redirect()->route('bookings.index')->with('success', __('Permohonan :code telah dibatalkan dan dipadam.', ['code' => $code]));
     }
 
     private function authorizeView(User $user, Booking $booking): void
@@ -230,6 +230,6 @@ class BookingController extends Controller
             return;
         }
 
-        abort(403, 'Anda tidak mempunyai kebenaran untuk melihat butiran tempahan ini.');
+        abort(403, __('Anda tidak mempunyai kebenaran untuk melihat butiran tempahan ini.'));
     }
 }

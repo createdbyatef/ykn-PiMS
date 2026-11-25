@@ -75,7 +75,15 @@ class Vehicle extends Model
 
     public function statusLabel(): string
     {
-        return self::STATUSES[$this->status] ?? ucfirst($this->status);
+        return __(self::STATUSES[$this->status] ?? ucfirst($this->status));
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function translatedStatuses(): array
+    {
+        return collect(self::STATUSES)->map(fn (string $label) => __($label))->all();
     }
 
     public function statusBadgeClass(): string

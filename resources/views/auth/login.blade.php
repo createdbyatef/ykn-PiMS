@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#e4d7f0">
-    <title>Log Masuk — e-Pilot YKN</title>
+    <title>{{ __('Log Masuk') }} — e-Pilot YKN</title>
     <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="{{ asset('css/epilot.css') }}?v=3" rel="stylesheet">
+    <link href="{{ asset('css/epilot.css') }}?v=14" rel="stylesheet">
+    @include('partials.splash-head', ['skipSplash' => $errors->any()])
     <style>
         body {
             min-height: 100vh;
@@ -210,15 +211,18 @@
             pointer-events: none;
         }
         .illustration-caption {
-            margin-top: -0.75rem;
-            font-size: 0.75rem;
-            color: #6a6185;
+            margin-top: 0.5rem;
+            position: relative;
+            z-index: 2;
+            font-size: 0.76rem;
+            color: #5b5276;
             font-weight: 500;
             letter-spacing: 0.01em;
         }
     </style>
 </head>
 <body>
+    @include('partials.splash')
     <main class="login-stage">
         {{-- Left: Crisp Elevated White Login Card --}}
         <section class="login-card">
@@ -227,14 +231,16 @@
                     <img src="{{ asset('images/ykn-emblem.png') }}" alt="Logo YKN">
                     <span class="login-brand-name">e-Pilot <span>YKN</span></span>
                 </a>
-                <div class="login-meta-right">
-                    Portal Dalaman
-                    <strong>Unit Pentadbiran</strong>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="lang-switch-pill" role="group" aria-label="Language switch">
+                        <a href="{{ route('locale.switch', 'ms') }}" class="lang-switch-opt {{ app()->getLocale() === 'ms' ? 'active' : '' }}">BM</a>
+                        <a href="{{ route('locale.switch', 'en') }}" class="lang-switch-opt {{ app()->getLocale() === 'en' ? 'active' : '' }}">EN</a>
+                    </div>
                 </div>
             </div>
 
-            <h1 class="login-heading">Log Masuk</h1>
-            <p class="login-subheading">Sistem Pengurusan Tempahan Kenderaan &amp; Pilot HQ, Yayasan Kebajikan Negara Malaysia.</p>
+            <h1 class="login-heading">{{ __('Log Masuk') }}</h1>
+            <p class="login-subheading">{{ __('Sistem Pengurusan Tempahan Kenderaan & Pilot HQ, Yayasan Kebajikan Negara Malaysia.') }}</p>
 
             @if(session('success'))
                 <div class="alert alert-success py-2 mb-3 border-0">{{ session('success') }}</div>
@@ -247,11 +253,11 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login.attempt') }}">
+            <form method="POST" action="{{ route('login.attempt') }}" id="loginForm">
                 @csrf
 
                 <div class="mb-3">
-                    <label for="email" class="field-label d-block">Alamat Emel Rasmi</label>
+                    <label for="email" class="field-label d-block">{{ __('Alamat Emel Rasmi') }}</label>
                     <input
                         type="email"
                         id="email"
@@ -267,8 +273,8 @@
 
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <label for="password" class="field-label mb-0">Kata Laluan</label>
-                        <span class="helper-link" title="Hubungi Unit Pentadbiran YKN untuk menetapkan semula kata laluan">Lupa kata laluan?</span>
+                        <label for="password" class="field-label mb-0">{{ __('Kata Laluan') }}</label>
+                        <span class="helper-link" title="{{ __('Hubungi Unit Pentadbiran YKN untuk menetapkan semula kata laluan') }}">{{ __('Lupa kata laluan?') }}</span>
                     </div>
                     <div class="password-wrap">
                         <input
@@ -280,7 +286,7 @@
                             required
                             autocomplete="current-password"
                         >
-                        <button type="button" class="password-toggle" id="togglePassword" aria-label="Papar kata laluan">
+                        <button type="button" class="password-toggle" id="togglePassword" aria-label="{{ __('Papar kata laluan') }}">
                             <i class="bi bi-eye-slash"></i>
                         </button>
                     </div>
@@ -289,30 +295,30 @@
                 <div class="d-flex justify-content-between align-items-center mt-3 mb-4">
                     <div class="form-check mb-0">
                         <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                        <label class="form-check-label text-muted" style="font-size: 0.78rem;" for="remember">Ingat sesi saya</label>
+                        <label class="form-check-label text-muted" style="font-size: 0.78rem;" for="remember">{{ __('Ingat sesi saya') }}</label>
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-signin">
-                    Log Masuk
+                    {{ __('Log Masuk') }}
                 </button>
             </form>
 
             @if(app()->environment('local'))
                 <div class="demo-strip">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="section-label">Akaun Demo Pantas</span>
-                        <span class="text-muted" style="font-size: 0.7rem;">Kata laluan: <code>password</code></span>
+                        <span class="section-label">{{ __('Akaun Demo Pantas') }}</span>
+                        <span class="text-muted" style="font-size: 0.7rem;">{{ __('Kata laluan:') }} <code>password</code></span>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
                         <button type="button" class="demo-chip" onclick="fillDemo('admin@ykn.gov.my')">
-                            <i class="bi bi-shield-check me-1 text-orchid"></i>Admin
+                            <i class="bi bi-shield-check me-1 text-orchid"></i>{{ __('Admin') }}
                         </button>
                         <button type="button" class="demo-chip" onclick="fillDemo('huda@ykn.gov.my')">
-                            <i class="bi bi-person me-1 text-violet"></i>Staf YKN
+                            <i class="bi bi-person me-1 text-violet"></i>{{ __('Staf YKN') }}
                         </button>
                         <button type="button" class="demo-chip" onclick="fillDemo('roslan.pilot@ykn.gov.my')">
-                            <i class="bi bi-person-badge me-1 text-brand-orange"></i>Pilot HQ
+                            <i class="bi bi-person-badge me-1 text-brand-orange"></i>{{ __('Pilot HQ') }}
                         </button>
                     </div>
                 </div>
@@ -322,7 +328,7 @@
         {{-- Right: Seamless 3D Clay Illustration --}}
         <section class="illustration-pane" aria-hidden="true">
             <img src="{{ asset('images/login-illustration.jpg') }}" alt="Ilustrasi e-Pilot YKN" class="illustration-img">
-            <div class="illustration-caption">Yayasan Kebajikan Negara Malaysia &middot; Armada &amp; Pilot HQ</div>
+            <div class="illustration-caption">{!! __('Yayasan Kebajikan Negara Malaysia &middot; Kenderaan &amp; Pilot HQ') !!}</div>
         </section>
     </main>
 
@@ -338,6 +344,19 @@
             const show = input.type === 'password';
             input.type = show ? 'text' : 'password';
             icon.className = show ? 'bi bi-eye' : 'bi bi-eye-slash';
+        });
+        document.getElementById('loginForm').addEventListener('submit', function () {
+            const btn = this.querySelector('.btn-signin');
+            if (btn) btn.disabled = true;
+            if (typeof window.yknShowSplash === 'function') {
+                window.yknShowSplash(@json(__('Mengesahkan akses anda...')));
+            }
+        });
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                const btn = document.querySelector('#loginForm .btn-signin');
+                if (btn) btn.disabled = false;
+            }
         });
     </script>
 </body>

@@ -429,4 +429,108 @@ class EPilotYknTest extends TestCase
         ])->assertSessionHasErrors('email');
         $this->assertGuest();
     }
+
+    public function test_bilingual_language_switcher_toggles_between_ms_and_en(): void
+    {
+        // Default is Bahasa Melayu
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('Alamat Emel Rasmi');
+
+        // Switch to English
+        $this->from(route('login'))
+            ->get(route('locale.switch', 'en'))
+            ->assertRedirect(route('login'));
+
+        $this->assertSame('en', session('locale'));
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('Official Email Address')
+            ->assertSee('Sign In');
+
+        // Authenticated Admin dashboard renders in English
+        $this->actingAs($this->admin)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Pending Requests')
+            ->assertSee('Available HQ Pilots');
+
+        // Switch back to Bahasa Melayu
+        $this->actingAs($this->admin)
+            ->from(route('dashboard'))
+            ->get(route('locale.switch', 'ms'))
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertSame('ms', session('locale'));
+        $this->actingAs($this->admin)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('Permohonan Menunggu');
+    }
+
+    public function test_splash_screen_renders_on_login_and_dashboard_with_post_login_flash(): void
+    {
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('id="yknSplashScreen"', false)
+            ->assertSee('images/splash-loader.jpg', false)
+            ->assertSee('Menyediakan sistem e-Pilot YKN...');
+
+        $this->post(route('login.attempt'), [
+            'email' => $this->admin->email,
+            'password' => 'password',
+        ])
+            ->assertRedirect(route('dashboard'))
+            ->assertSessionHas('show_splash', true);
+
+        $this->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('id="yknSplashScreen"', false)
+            ->assertSee('images/splash-loader.jpg', false)
+            ->assertSee('Selamat datang! Memuatkan papan pemuka...');
+
+        // Pilot login preserves show_splash across dashboard -> pilot.trips.index redirect
+        $this->post(route('logout'))->assertRedirect(route('login'));
+        $this->post(route('login.attempt'), [
+            'email' => $this->pilot1->email,
+            'password' => 'password',
+        ])
+            ->assertRedirect(route('dashboard'))
+            ->assertSessionHas('show_splash', true);
+
+        $this->get(route('dashboard'))
+            ->assertRedirect(route('pilot.trips.index'))
+            ->assertSessionHas('show_splash', true);
+
+        $this->get(route('pilot.trips.index'))
+            ->assertOk()
+            ->assertSee('id="yknSplashScreen"', false)
+            ->assertSee('Selamat datang! Memuatkan papan pemuka...');
+    }
+
+    public function test_skeleton_loading_screen_matches_each_page_variant(): void
+    {
+        $this->actingAs($this->admin)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('id="yknPageSkeleton"', false)
+            ->assertSee('data-current-variant="dashboard"', false)
+            ->assertSee('id="yknTopProgress"', false);
+
+        $this->actingAs($this->admin)
+            ->get(route('bookings.index'))
+            ->assertOk()
+            ->assertSee('data-current-variant="table"', false);
+
+        $this->actingAs($this->admin)
+            ->get(route('bookings.create'))
+            ->assertOk()
+            ->assertSee('data-current-variant="form"', false);
+
+        $this->actingAs($this->admin)
+            ->get(route('calendar.index'))
+            ->assertOk()
+            ->assertSee('data-current-variant="calendar"', false)
+            ->assertSee('id="calendarGridSkeleton"', false);
+    }
 }

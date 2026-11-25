@@ -21,6 +21,8 @@ class DashboardController extends Controller
         $user = $request->user();
 
         if ($user->isPilot()) {
+            $request->session()->reflash();
+
             return redirect()->route('pilot.trips.index');
         }
 
@@ -72,6 +74,30 @@ class DashboardController extends Controller
         $availablePilotIds = $availablePilots->pluck('id')->all();
         $availableVehicleIds = $this->availabilityService->getAvailableVehiclesNow()->pluck('id')->all();
 
+        // Monthly booking flow (last 6 months) for FinSet-style dual bar chart
+        $monthlyActivity = collect(range(5, 0))->map(function (int $monthsAgo) {
+            $monthStart = now()->startOfMonth()->subMonths($monthsAgo);
+            $monthEnd = $monthStart->copy()->endOfMonth();
+
+            $total = Booking::whereBetween('start_datetime', [$monthStart, $monthEnd])->count();
+            $approvedOrDone = Booking::whereBetween('start_datetime', [$monthStart, $monthEnd])
+                ->whereIn('status', [Booking::STATUS_APPROVED, Booking::STATUS_COMPLETED])
+                ->count();
+
+            return [
+                'label' => $monthStart->locale('ms')->translatedFormat('M'),
+                'total' => $total,
+                'approved' => $approvedOrDone,
+            ];
+        });
+
+        $typeCounts = [
+            'vehicle_and_pilot' => Booking::where('request_type', Booking::TYPE_VEHICLE_AND_PILOT)->count(),
+            'vehicle_only' => Booking::where('request_type', Booking::TYPE_VEHICLE_ONLY)->count(),
+            'pilot_only' => Booking::where('request_type', Booking::TYPE_PILOT_ONLY)->count(),
+        ];
+        $totalBookingsCount = array_sum($typeCounts);
+
         return view('dashboard.admin', compact(
             'pendingCount',
             'urgentPendingCount',
@@ -86,7 +112,10 @@ class DashboardController extends Controller
             'vehicles',
             'pilots',
             'availablePilotIds',
-            'availableVehicleIds'
+            'availableVehicleIds',
+            'monthlyActivity',
+            'typeCounts',
+            'totalBookingsCount'
         ));
     }
 

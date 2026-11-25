@@ -195,12 +195,12 @@ class Booking extends Model
 
     public function requestTypeLabel(): string
     {
-        return self::REQUEST_TYPES[$this->request_type] ?? $this->request_type;
+        return __(self::REQUEST_TYPES[$this->request_type] ?? $this->request_type);
     }
 
     public function statusLabel(): string
     {
-        return self::STATUSES[$this->status] ?? ucfirst($this->status);
+        return __(self::STATUSES[$this->status] ?? ucfirst($this->status));
     }
 
     public function rejectionReasonLabel(): ?string
@@ -209,7 +209,31 @@ class Booking extends Model
             return null;
         }
 
-        return self::REJECTION_REASONS[$this->rejection_reason] ?? $this->rejection_reason;
+        return __(self::REJECTION_REASONS[$this->rejection_reason] ?? $this->rejection_reason);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function translatedRequestTypes(): array
+    {
+        return collect(self::REQUEST_TYPES)->map(fn (string $label) => __($label))->all();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function translatedStatuses(): array
+    {
+        return collect(self::STATUSES)->map(fn (string $label) => __($label))->all();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function translatedRejectionReasons(): array
+    {
+        return collect(self::REJECTION_REASONS)->map(fn (string $label) => __($label))->all();
     }
 
     public function statusBadgeClass(): string

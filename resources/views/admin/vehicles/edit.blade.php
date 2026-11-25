@@ -1,8 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Kenderaan ' . $vehicle->plate_number)
-@section('page-title', 'Kemaskini Kenderaan ' . $vehicle->plate_number)
-@section('page-subtitle', 'Kemaskini butiran kenderaan, status penyelenggaraan atau bacaan odometer.')
+@section('title', __('Edit Kenderaan :plate', ['plate' => $vehicle->plate_number]))
+@section('page-title', __('Kemaskini Kenderaan :plate', ['plate' => $vehicle->plate_number]))
+@section('page-subtitle', __('Kemaskini butiran kenderaan, status penyelenggaraan atau bacaan odometer.'))
+@section('skeleton', 'form')
 
 @section('content')
     <div class="row justify-content-center">
@@ -15,8 +16,8 @@
                         @include('admin.vehicles._form')
 
                         <div class="d-flex justify-content-between pt-4 mt-4 border-top">
-                            <a href="{{ route('admin.vehicles.index') }}" class="btn btn-light border">Batal</a>
-                            <button type="submit" class="btn btn-primary fw-semibold px-4">Kemaskini Kenderaan</button>
+                            <a href="{{ route('admin.vehicles.index') }}" class="btn btn-light border">{{ __('Batal') }}</a>
+                            <button type="submit" class="btn btn-primary fw-semibold px-4">{{ __('Kemaskini Kenderaan') }}</button>
                         </div>
                     </form>
                 </div>

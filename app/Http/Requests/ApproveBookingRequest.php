@@ -40,8 +40,8 @@ class ApproveBookingRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'vehicle_id.required' => 'Sila pilih kenderaan untuk diluluskan.',
-            'pilot_id.required' => 'Sila pilih Pilot HQ untuk ditugaskan.',
+            'vehicle_id.required' => __('Sila pilih kenderaan untuk diluluskan.'),
+            'pilot_id.required' => __('Sila pilih Pilot HQ untuk ditugaskan.'),
         ];
     }
 }
